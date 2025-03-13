@@ -11,16 +11,16 @@ interface HaircutRecommendationProps {
 }
 
 const HaircutCard: React.FC<{ haircut: Haircut }> = ({ haircut }) => {
-  // Usar imagem placeholder para desenvolvimento
+  // Use placeholder image for development
   const imageUrl = getPlaceholderImage(haircut);
   
   return (
-    <div className="haircut-card bg-white rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+    <div className="haircut-card">
       <div className="relative">
         <img 
           src={imageUrl} 
           alt={haircut.name} 
-          className="haircut-card-image h-64 w-full object-cover rounded-t-md"
+          className="haircut-card-image"
         />
         <div className="absolute bottom-0 right-0 bg-haircut-blue text-white rounded-tl-md px-2 py-1 text-xs font-medium">
           {haircut.rating.toFixed(1)} ★
@@ -52,8 +52,6 @@ const HaircutRecommendation: React.FC<HaircutRecommendationProps> = ({
   haircuts, 
   isLoading = false 
 }) => {
-  console.log("Recomendações recebidas:", haircuts);
-  
   if (isLoading) {
     return (
       <Card className="mt-6">
@@ -73,16 +71,16 @@ const HaircutRecommendation: React.FC<HaircutRecommendationProps> = ({
     );
   }
   
-  if (!haircuts || haircuts.length === 0) {
+  if (haircuts.length === 0) {
     return (
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle className="text-xl">Recomendações de Cortes</CardTitle>
+          <CardTitle className="text-xl">Haircut Recommendations</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center p-6">
             <p className="text-muted-foreground">
-              Posicione seu rosto na visualização da câmera para obter recomendações personalizadas de cortes de cabelo.
+              Position your face in the camera view to get personalized haircut recommendations.
             </p>
           </div>
         </CardContent>
@@ -95,7 +93,7 @@ const HaircutRecommendation: React.FC<HaircutRecommendationProps> = ({
       <CardHeader>
         <CardTitle className="text-xl flex items-center">
           <CheckCircle className="h-5 w-5 mr-2 text-haircut-blue" />
-          Cortes de Cabelo Recomendados
+          Recommended Haircuts
         </CardTitle>
       </CardHeader>
       <CardContent>

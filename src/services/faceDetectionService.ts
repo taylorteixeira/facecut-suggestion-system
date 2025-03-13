@@ -1,10 +1,10 @@
 
-// Serviço de detecção facial usando TensorFlow.js e face-api.js
+// Face detection service using TensorFlow.js and face-api.js
 
 import * as tf from '@tensorflow/tfjs';
 import * as faceapi from '@vladmandic/face-api';
 
-// Classificações de formato do rosto
+// Face shape classifications
 export type FaceShape = 'oval' | 'round' | 'square' | 'heart' | 'long' | 'diamond' | 'triangle';
 
 export interface FaceData {
@@ -12,28 +12,26 @@ export interface FaceData {
   confidence: number;
   landmarks?: faceapi.FaceLandmarks68;
   detection?: faceapi.FaceDetection;
-  gender?: 'feminino' | 'masculino';
 }
 
 let modelsLoaded = false;
 
-// URLs dos modelos (link CDN atualizado que contém todos os modelos necessários)
-const MODEL_URL = 'https://vladmandic.github.io/face-api/model';
+// Model URLs (direct CDN links to ensure reliable access)
+const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
 
 export const loadModels = async () => {
   if (modelsLoaded) return;
   
   try {
-    console.log('Carregando modelos de detecção facial de:', MODEL_URL);
+    console.log('Loading face detection models from:', MODEL_URL);
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
     await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
     await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-    await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
     modelsLoaded = true;
-    console.log('Modelos de detecção facial carregados com sucesso');
+    console.log('Face detection models loaded successfully');
   } catch (error) {
-    console.error('Erro ao carregar modelos de detecção facial:', error);
-    throw new Error('Falha ao carregar modelos de detecção facial');
+    console.error('Error loading face detection models:', error);
+    throw new Error('Failed to load face detection models');
   }
 };
 
@@ -45,67 +43,62 @@ export const detectFace = async (imageElement: HTMLImageElement | HTMLVideoEleme
   try {
     const detections = await faceapi
       .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks()
-      .withAgeAndGender();
+      .withFaceLandmarks();
     
     if (!detections) {
       return null;
     }
     
-    // Analisar formato do rosto com base em pontos de referência
+    // Analyze face shape based on landmarks
     const faceShape = analyzeFaceShape(detections.landmarks);
-    
-    // Determinar o gênero
-    const gender = detections.gender === 'female' ? 'feminino' : 'masculino';
     
     return {
       faceShape: faceShape.shape,
       confidence: faceShape.confidence,
       landmarks: detections.landmarks,
-      detection: detections.detection,
-      gender: gender
+      detection: detections.detection
     };
   } catch (error) {
-    console.error('Erro ao detectar rosto:', error);
+    console.error('Error detecting face:', error);
     return null;
   }
 };
 
-// Algoritmo simplificado para determinar o formato do rosto com base em pontos de referência
+// Simplified algorithm to determine face shape based on landmarks
 const analyzeFaceShape = (landmarks: faceapi.FaceLandmarks68): { shape: FaceShape; confidence: number } => {
-  // Obter medidas do rosto
+  // Get face measurements
   const jawline = landmarks.getJawOutline();
   const nose = landmarks.getNose();
   const mouth = landmarks.getMouth();
   
-  // Largura do rosto nas maçãs do rosto
+  // Face width at the cheekbones
   const cheekLeft = jawline[1];
   const cheekRight = jawline[15];
   const faceWidth = Math.abs(cheekRight.x - cheekLeft.x);
   
-  // Altura do rosto
+  // Face height
   const chin = jawline[8];
   const foreheadY = jawline[0].y;
   const faceHeight = Math.abs(chin.y - foreheadY);
   
-  // Largura da mandíbula
+  // Jaw width
   const jawLeft = jawline[3];
   const jawRight = jawline[13];
   const jawWidth = Math.abs(jawRight.x - jawLeft.x);
   
-  // Largura da testa
+  // Forehead width
   const foreheadWidth = Math.abs(jawline[0].x - jawline[16].x);
   
-  // Calcular proporções
+  // Calculate ratios
   const widthToHeightRatio = faceWidth / faceHeight;
   const jawToFaceWidthRatio = jawWidth / faceWidth;
   const foreheadToJawRatio = foreheadWidth / jawWidth;
   
-  // Classificação simples baseada em proporções
-  // Esta é uma versão simplificada - em um aplicativo real, você usaria um algoritmo mais sofisticado
+  // Simple classification based on ratios
+  // This is a simplified version - in a real app, you'd use a more sophisticated algorithm
   
   let shape: FaceShape = 'oval';
-  let confidence = 0.7; // Confiança padrão
+  let confidence = 0.7; // Default confidence
   
   if (widthToHeightRatio > 0.85 && jawToFaceWidthRatio > 0.9) {
     shape = 'round';
@@ -136,28 +129,14 @@ export const drawFaceDetection = (
   detection: faceapi.FaceDetection,
   landmarks: faceapi.FaceLandmarks68
 ) => {
-  // Verificar se o elemento tem dimensões válidas
-  if (!imageElement.width || !imageElement.height) {
-    console.log('Elemento de imagem/vídeo sem dimensões válidas:', 
-      { width: imageElement.width, height: imageElement.height });
-    return;
-  }
-  
-  // Redimensionar canvas para combinar com a imagem
+  // Resize canvas to match the image
   const displaySize = {
     width: imageElement.width,
     height: imageElement.height
   };
-  
-  // Verificar dimensões válidas antes de redimensionar
-  if (displaySize.width === 0 || displaySize.height === 0) {
-    console.log('Dimensões inválidas para redimensionamento:', displaySize);
-    return;
-  }
-  
   faceapi.matchDimensions(canvas, displaySize);
   
-  // Desenhar detecções e pontos de referência
+  // Draw detections and landmarks
   const resizedDetection = faceapi.resizeResults({ detection, landmarks }, displaySize);
   
   const ctx = canvas.getContext('2d');
@@ -165,13 +144,13 @@ export const drawFaceDetection = (
   
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  // Desenhar caixa do rosto
+  // Draw face box
   const { box } = resizedDetection.detection;
   ctx.strokeStyle = '#4A90E2';
   ctx.lineWidth = 2;
   ctx.strokeRect(box.x, box.y, box.width, box.height);
   
-  // Desenhar pontos de referência
+  // Draw landmarks
   ctx.fillStyle = '#50E3C2';
   resizedDetection.landmarks.positions.forEach(point => {
     ctx.beginPath();

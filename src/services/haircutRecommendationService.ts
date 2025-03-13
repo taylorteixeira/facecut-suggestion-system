@@ -9,300 +9,269 @@ export interface Haircut {
   suitableFor: FaceShape[];
   attributes: string[];
   rating: number;
-  gender: 'feminino' | 'masculino' | 'unisex';
 }
 
-// Banco de dados de cortes de cabelo categorizados por formato de rosto
+// Database of haircuts categorized by face shape
 const haircutsDatabase: Haircut[] = [
-  // Cortes para Rosto Oval (Feminino)
+  // Oval Face Shape Haircuts
   {
-    id: 'oval-f1',
-    name: 'Long Layered',
-    description: 'Cabelo longo em camadas que emoldura o rosto com movimento e volume.',
-    imageUrl: '/haircuts/female/oval-long-layered.jpg',
+    id: 'oval-1',
+    name: 'Textured Crop',
+    description: 'A versatile, modern style with textured top and short sides.',
+    imageUrl: '/haircuts/oval-textured-crop.jpg',
     suitableFor: ['oval'],
-    attributes: ['longo', 'camadas', 'versátil'],
-    rating: 4.8,
-    gender: 'feminino'
+    attributes: ['short', 'modern', 'low-maintenance'],
+    rating: 4.8
   },
   {
-    id: 'oval-f2',
-    name: 'Bob Médio',
-    description: 'Corte na altura do queixo que realça as maçãs do rosto.',
-    imageUrl: '/haircuts/female/oval-bob.jpg',
+    id: 'oval-2',
+    name: 'Classic Pompadour',
+    description: 'An elegant style with volume on top and tapered sides.',
+    imageUrl: '/haircuts/oval-pompadour.jpg',
     suitableFor: ['oval', 'diamond'],
-    attributes: ['médio', 'clássico', 'elegante'],
-    rating: 4.7,
-    gender: 'feminino'
+    attributes: ['classic', 'formal', 'medium-length'],
+    rating: 4.7
   },
   {
-    id: 'oval-f3',
-    name: 'Pixie com Franja',
-    description: 'Corte curto moderno que destaca os olhos e as maçãs do rosto.',
-    imageUrl: '/haircuts/female/oval-pixie.jpg',
-    suitableFor: ['oval', 'heart'],
-    attributes: ['curto', 'moderno', 'baixa manutenção'],
-    rating: 4.6,
-    gender: 'feminino'
+    id: 'oval-3',
+    name: 'Layered Medium',
+    description: 'Medium length with layered texture for a refined look.',
+    imageUrl: '/haircuts/oval-layered-medium.jpg',
+    suitableFor: ['oval', 'long'],
+    attributes: ['medium-length', 'versatile', 'easy-to-style'],
+    rating: 4.5
   },
   
-  // Cortes para Rosto Redondo (Feminino)
+  // Round Face Shape Haircuts
   {
-    id: 'round-f1',
-    name: 'Long Bob Assimétrico',
-    description: 'Corte na altura dos ombros que alonga visualmente o rosto.',
-    imageUrl: '/haircuts/female/round-lob.jpg',
-    suitableFor: ['round'],
-    attributes: ['médio', 'assimétrico', 'moderno'],
-    rating: 4.7,
-    gender: 'feminino'
+    id: 'round-1',
+    name: 'Angular Fringe',
+    description: 'Creates angles and definition to balance round features.',
+    imageUrl: '/haircuts/round-angular-fringe.jpg',
+    suitableFor: ['round', 'oval'],
+    attributes: ['medium-length', 'angular', 'modern'],
+    rating: 4.6
   },
   {
-    id: 'round-f2',
-    name: 'Camadas Longas com Franja Lateral',
-    description: 'Corte que cria linhas verticais para alongar o rosto.',
-    imageUrl: '/haircuts/female/round-layers-side.jpg',
-    suitableFor: ['round', 'square'],
-    attributes: ['longo', 'camadas', 'franja'],
-    rating: 4.6,
-    gender: 'feminino'
+    id: 'round-2',
+    name: 'Side Part Undercut',
+    description: 'Adds height and structure with short sides and longer top.',
+    imageUrl: '/haircuts/round-undercut.jpg',
+    suitableFor: ['round'],
+    attributes: ['short-sides', 'high-contrast', 'trendy'],
+    rating: 4.7
   },
   {
-    id: 'round-f3',
-    name: 'Shaggy Médio',
-    description: 'Corte texturizado com volume no topo para alongar visualmente o rosto.',
-    imageUrl: '/haircuts/female/round-shaggy.jpg',
-    suitableFor: ['round'],
-    attributes: ['médio', 'texturizado', 'volume'],
-    rating: 4.5,
-    gender: 'feminino'
+    id: 'round-3',
+    name: 'Faux Hawk',
+    description: 'Creates vertical volume to elongate the face shape.',
+    imageUrl: '/haircuts/round-faux-hawk.jpg',
+    suitableFor: ['round', 'triangle'],
+    attributes: ['edgy', 'textured', 'urban'],
+    rating: 4.4
   },
   
-  // Cortes para Rosto Quadrado (Feminino)
+  // Square Face Shape Haircuts
   {
-    id: 'square-f1',
-    name: 'Ondas Suaves Médias',
-    description: 'Corte médio com ondas que suavizam os ângulos do rosto.',
-    imageUrl: '/haircuts/female/square-waves.jpg',
-    suitableFor: ['square'],
-    attributes: ['médio', 'ondulado', 'suave'],
-    rating: 4.8,
-    gender: 'feminino'
-  },
-  {
-    id: 'square-f2',
-    name: 'Long Layers com Franja Cortina',
-    description: 'Camadas longas com franja aberta que suaviza a testa.',
-    imageUrl: '/haircuts/female/square-long-curtain.jpg',
+    id: 'square-1',
+    name: 'Textured Slick Back',
+    description: 'Softens angles while maintaining a masculine look.',
+    imageUrl: '/haircuts/square-slick-back.jpg',
     suitableFor: ['square', 'diamond'],
-    attributes: ['longo', 'camadas', 'franja'],
-    rating: 4.7,
-    gender: 'feminino'
+    attributes: ['versatile', 'classic', 'medium-length'],
+    rating: 4.8
   },
   {
-    id: 'square-f3',
-    name: 'Bob Texturizado',
-    description: 'Bob com textura e movimento que suaviza os ângulos.',
-    imageUrl: '/haircuts/female/square-textured-bob.jpg',
-    suitableFor: ['square', 'round'],
-    attributes: ['curto', 'texturizado', 'moderno'],
-    rating: 4.6,
-    gender: 'feminino'
+    id: 'square-2',
+    name: 'Messy Fringe',
+    description: 'Adds softness to strong jawlines with textured layers.',
+    imageUrl: '/haircuts/square-messy-fringe.jpg',
+    suitableFor: ['square'],
+    attributes: ['casual', 'textured', 'trendy'],
+    rating: 4.6
+  },
+  {
+    id: 'square-3',
+    name: 'Brush Cut',
+    description: 'Short, clean style that works well with strong features.',
+    imageUrl: '/haircuts/square-brush-cut.jpg',
+    suitableFor: ['square', 'oval'],
+    attributes: ['short', 'low-maintenance', 'classic'],
+    rating: 4.5
   },
   
-  // Cortes para Rosto Coração (Feminino)
+  // Heart Face Shape Haircuts
   {
-    id: 'heart-f1',
-    name: 'Bob com Franja',
-    description: 'Bob clássico com franja que equilibra a largura da testa.',
-    imageUrl: '/haircuts/female/heart-bob-bangs.jpg',
+    id: 'heart-1',
+    name: 'Side-Swept Bangs',
+    description: 'Balances wider forehead with side-swept texture.',
+    imageUrl: '/haircuts/heart-side-swept.jpg',
+    suitableFor: ['heart', 'triangle'],
+    attributes: ['medium-length', 'asymmetric', 'stylish'],
+    rating: 4.7
+  },
+  {
+    id: 'heart-2',
+    name: 'Mid-Length Layers',
+    description: 'Adds volume at jawline to balance proportions.',
+    imageUrl: '/haircuts/heart-mid-layers.jpg',
     suitableFor: ['heart'],
-    attributes: ['médio', 'franja', 'clássico'],
-    rating: 4.7,
-    gender: 'feminino'
+    attributes: ['medium-length', 'layered', 'versatile'],
+    rating: 4.6
   },
   {
-    id: 'heart-f2',
-    name: 'Lob com Ondas',
-    description: 'Long bob ondulado que adiciona volume na parte inferior do rosto.',
-    imageUrl: '/haircuts/female/heart-wavy-lob.jpg',
-    suitableFor: ['heart', 'diamond'],
-    attributes: ['médio', 'ondulado', 'equilibrado'],
-    rating: 4.8,
-    gender: 'feminino'
-  },
-  {
-    id: 'heart-f3',
-    name: 'Pixie Longo',
-    description: 'Pixie com mais comprimento no topo que na nuca.',
-    imageUrl: '/haircuts/female/heart-long-pixie.jpg',
+    id: 'heart-3',
+    name: 'Textured Quiff',
+    description: 'Creates balance with volume on top and neat sides.',
+    imageUrl: '/haircuts/heart-quiff.jpg',
     suitableFor: ['heart', 'oval'],
-    attributes: ['curto', 'moderno', 'elegante'],
-    rating: 4.6,
-    gender: 'feminino'
+    attributes: ['medium-length', 'textured', 'stylish'],
+    rating: 4.8
   },
   
-  // Cortes para Rosto Longo (Feminino)
+  // Long Face Shape Haircuts
   {
-    id: 'long-f1',
-    name: 'Bob com Franja Reta',
-    description: 'Bob com franja reta que encurta visualmente o rosto.',
-    imageUrl: '/haircuts/female/long-bob-straight-bangs.jpg',
+    id: 'long-1',
+    name: 'Side-Parted Crop',
+    description: 'Adds width to the face with horizontal volume.',
+    imageUrl: '/haircuts/long-side-parted.jpg',
     suitableFor: ['long'],
-    attributes: ['médio', 'franja', 'estruturado'],
-    rating: 4.7,
-    gender: 'feminino'
+    attributes: ['short', 'classic', 'professional'],
+    rating: 4.5
   },
   {
-    id: 'long-f2',
-    name: 'Shag com Franja Cortina',
-    description: 'Corte em camadas com franja aberta que adiciona largura.',
-    imageUrl: '/haircuts/female/long-shag-curtain.jpg',
+    id: 'long-2',
+    name: 'Textured Layers',
+    description: 'Creates width with layered sides and textured volume.',
+    imageUrl: '/haircuts/long-textured-layers.jpg',
     suitableFor: ['long', 'oval'],
-    attributes: ['médio', 'texturizado', 'franja'],
-    rating: 4.6,
-    gender: 'feminino'
+    attributes: ['medium-length', 'textured', 'casual'],
+    rating: 4.6
   },
   {
-    id: 'long-f3',
-    name: 'Ondas Volumosas Médias',
-    description: 'Corte médio com ondas que criam largura e reduzem o comprimento visual.',
-    imageUrl: '/haircuts/female/long-waves.jpg',
-    suitableFor: ['long'],
-    attributes: ['médio', 'ondulado', 'volumoso'],
-    rating: 4.8,
-    gender: 'feminino'
+    id: 'long-3',
+    name: 'Modern Caesar',
+    description: 'Horizontal fringe that shortens face appearance.',
+    imageUrl: '/haircuts/long-caesar.jpg',
+    suitableFor: ['long', 'oval'],
+    attributes: ['short', 'fringe', 'low-maintenance'],
+    rating: 4.4
   },
   
-  // Cortes para Rosto Diamante (Feminino)
+  // Diamond Face Shape Haircuts
   {
-    id: 'diamond-f1',
-    name: 'Long Layers com Franja Lateral',
-    description: 'Camadas longas com franja lateral que suaviza os ângulos.',
-    imageUrl: '/haircuts/female/diamond-long-side.jpg',
+    id: 'diamond-1',
+    name: 'Textured Fringe',
+    description: 'Softens angular features with textured layers.',
+    imageUrl: '/haircuts/diamond-textured-fringe.jpg',
     suitableFor: ['diamond'],
-    attributes: ['longo', 'camadas', 'franja'],
-    rating: 4.7,
-    gender: 'feminino'
+    attributes: ['medium-length', 'textured', 'modern'],
+    rating: 4.7
   },
   {
-    id: 'diamond-f2',
-    name: 'Bob Suave com Ponta Invertida',
-    description: 'Bob suave que complementa as maçãs do rosto.',
-    imageUrl: '/haircuts/female/diamond-soft-bob.jpg',
-    suitableFor: ['diamond', 'heart'],
-    attributes: ['médio', 'suave', 'elegante'],
-    rating: 4.8,
-    gender: 'feminino'
-  },
-  {
-    id: 'diamond-f3',
-    name: 'Pixie com Franja Longa',
-    description: 'Corte curto com franja mais longa que suaviza os ângulos.',
-    imageUrl: '/haircuts/female/diamond-pixie-bangs.jpg',
+    id: 'diamond-2',
+    name: 'Classic Taper',
+    description: 'Balanced style that complements cheekbone structure.',
+    imageUrl: '/haircuts/diamond-classic-taper.jpg',
     suitableFor: ['diamond', 'oval'],
-    attributes: ['curto', 'franja', 'moderno'],
-    rating: 4.6,
-    gender: 'feminino'
+    attributes: ['classic', 'versatile', 'medium-length'],
+    rating: 4.8
+  },
+  {
+    id: 'diamond-3',
+    name: 'Brushed Back',
+    description: 'Adds volume to complement high cheekbones.',
+    imageUrl: '/haircuts/diamond-brushed-back.jpg',
+    suitableFor: ['diamond', 'heart'],
+    attributes: ['medium-length', 'elegant', 'structured'],
+    rating: 4.6
   },
   
-  // Cortes para Rosto Triângulo (Feminino)
+  // Triangle Face Shape Haircuts
   {
-    id: 'triangle-f1',
-    name: 'Bob Volumoso',
-    description: 'Bob com volume no topo que equilibra a mandíbula mais larga.',
-    imageUrl: '/haircuts/female/triangle-volumized-bob.jpg',
+    id: 'triangle-1',
+    name: 'Volume Quiff',
+    description: 'Adds volume on top to balance wider jaw.',
+    imageUrl: '/haircuts/triangle-quiff.jpg',
     suitableFor: ['triangle'],
-    attributes: ['médio', 'volumoso', 'equilibrado'],
-    rating: 4.7,
-    gender: 'feminino'
+    attributes: ['voluminous', 'modern', 'stylish'],
+    rating: 4.7
   },
   {
-    id: 'triangle-f2',
-    name: 'Shag Curto com Camadas',
-    description: 'Corte shag com camadas que cria volume no topo.',
-    imageUrl: '/haircuts/female/triangle-short-shag.jpg',
+    id: 'triangle-2',
+    name: 'Textured Crop with Fringe',
+    description: 'Creates width at the top with textured styling.',
+    imageUrl: '/haircuts/triangle-crop-fringe.jpg',
     suitableFor: ['triangle', 'square'],
-    attributes: ['curto', 'camadas', 'texturizado'],
-    rating: 4.6,
-    gender: 'feminino'
+    attributes: ['modern', 'textured', 'trendy'],
+    rating: 4.6
   },
   {
-    id: 'triangle-f3',
-    name: 'Long Layers com Volume no Topo',
-    description: 'Camadas longas com volume no topo para equilibrar as proporções.',
-    imageUrl: '/haircuts/female/triangle-long-top.jpg',
-    suitableFor: ['triangle', 'heart'],
-    attributes: ['longo', 'camadas', 'volumoso'],
-    rating: 4.8,
-    gender: 'feminino'
+    id: 'triangle-3',
+    name: 'Pompadour with Fade',
+    description: 'High volume on top balances proportions perfectly.',
+    imageUrl: '/haircuts/triangle-pompadour.jpg',
+    suitableFor: ['triangle', 'oval'],
+    attributes: ['statement', 'high-volume', 'stylish'],
+    rating: 4.8
   }
 ];
 
-// Imagens para desenvolvimento (utilizando imagens reais)
+// Placeholder images for development
 const placeholderImages: Record<string, string> = {
-  'oval': 'https://images.unsplash.com/photo-1508216310976-c518daae0cdc?q=80&w=1974&auto=format&fit=crop',
-  'round': 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop',
-  'square': 'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?q=80&w=1795&auto=format&fit=crop',
-  'heart': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1470&auto=format&fit=crop',
-  'long': 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=1887&auto=format&fit=crop',
-  'diamond': 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1887&auto=format&fit=crop',
-  'triangle': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1887&auto=format&fit=crop'
+  'oval': 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=1974&auto=format&fit=crop',
+  'round': 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?q=80&w=1974&auto=format&fit=crop',
+  'square': 'https://images.unsplash.com/photo-1618886614638-80e3c103d465?q=80&w=1970&auto=format&fit=crop',
+  'heart': 'https://images.unsplash.com/photo-1548536902-6ab598cd4def?q=80&w=1964&auto=format&fit=crop',
+  'long': 'https://images.unsplash.com/photo-1574621100236-d25b64cfd647?q=80&w=1976&auto=format&fit=crop',
+  'diamond': 'https://images.unsplash.com/photo-1626033740248-7071c609015f?q=80&w=1974&auto=format&fit=crop',
+  'triangle': 'https://images.unsplash.com/photo-1614244376374-c96d72eeaf19?q=80&w=1974&auto=format&fit=crop'
 };
 
-// Função para obter imagem placeholder para desenvolvimento
+// Function to get placeholder image for development
 export const getPlaceholderImage = (haircut: Haircut): string => {
-  // Usar o primeiro formato de rosto adequado para obter um placeholder
+  // Use the first suitable face shape to get a placeholder
   const faceShape = haircut.suitableFor[0];
-  // Para cortes com imagens reais, use a URL direta
-  if (haircut.imageUrl.startsWith('http')) {
-    return haircut.imageUrl;
-  }
-  // Caso contrário, use um placeholder baseado no formato do rosto
-  return placeholderImages[faceShape] || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1888&auto=format&fit=crop';
+  return placeholderImages[faceShape] || 'https://images.unsplash.com/photo-1503443207922-dff7d543fd0e?q=80&w=1974&auto=format&fit=crop';
 };
 
-export const getRecommendedHaircuts = (faceShape: FaceShape, gender: 'feminino' | 'masculino' = 'feminino', limit: number = 5): Haircut[] => {
-  // Filtrar cortes adequados para o formato do rosto detectado e gênero
+export const getRecommendedHaircuts = (faceShape: FaceShape, limit: number = 5): Haircut[] => {
+  // Filter haircuts suitable for the detected face shape
   const suitable = haircutsDatabase.filter(haircut => 
-    haircut.suitableFor.includes(faceShape) && 
-    (haircut.gender === gender || haircut.gender === 'unisex')
+    haircut.suitableFor.includes(faceShape)
   );
   
-  // Ordenar por classificação (mais alta primeiro)
+  // Sort by rating (highest first)
   const sorted = suitable.sort((a, b) => b.rating - a.rating);
   
-  // Retornar as N principais recomendações
+  // Return the top N recommendations
   return sorted.slice(0, limit);
 };
 
-export const getAllHaircuts = (gender: 'feminino' | 'masculino' = 'feminino'): Haircut[] => {
-  return haircutsDatabase.filter(haircut => 
-    haircut.gender === gender || haircut.gender === 'unisex'
-  );
+export const getAllHaircuts = (): Haircut[] => {
+  return haircutsDatabase;
 };
 
 export const getHaircutById = (id: string): Haircut | undefined => {
   return haircutsDatabase.find(h => h.id === id);
 };
 
-export const getHaircutsForFaceShape = (faceShape: FaceShape, gender: 'feminino' | 'masculino' = 'feminino'): Haircut[] => {
+export const getHaircutsForFaceShape = (faceShape: FaceShape): Haircut[] => {
   return haircutsDatabase.filter(haircut => 
-    haircut.suitableFor.includes(faceShape) &&
-    (haircut.gender === gender || haircut.gender === 'unisex')
+    haircut.suitableFor.includes(faceShape)
   );
 };
 
 export const getFaceShapeDescription = (faceShape: FaceShape): string => {
   const descriptions: Record<FaceShape, string> = {
-    oval: "Rostos ovais são bem equilibrados com uma testa ligeiramente mais larga e uma linha da mandíbula suavemente arredondada. Este formato versátil funciona bem com a maioria dos cortes de cabelo.",
-    round: "Rostos redondos têm características suaves com um queixo arredondado e bochechas mais cheias. Estilos que adicionam altura e ângulos funcionam melhor para criar definição.",
-    square: "Rostos quadrados têm uma linha da mandíbula forte e angular e geralmente uma testa mais larga. Estilos que suavizam os ângulos mantendo a proporção são ideais.",
-    heart: "Rostos em forma de coração têm uma testa e maçãs do rosto mais largas com um queixo estreito. Equilibrar a largura no topo com estilos mais cheios na linha da mandíbula funciona bem.",
-    long: "Rostos longos são mais compridos do que largos com testas altas. Estilos que criam largura e minimizam a altura ajudam a equilibrar as proporções.",
-    diamond: "Rostos diamante têm testas e linhas da mandíbula estreitas com maçãs do rosto largas. Estilos que adicionam largura na testa e na linha da mandíbula são mais favorecedores.",
-    triangle: "Rostos triângulos têm uma linha da mandíbula mais larga que se estreita na testa. Estilos que adicionam volume no topo ajudam a equilibrar as proporções."
+    oval: "Oval faces are well-balanced with a slightly wider forehead and a gently rounded jawline. This versatile shape works well with most haircuts.",
+    round: "Round faces have soft features with a rounded chin and fuller cheeks. Styles that add height and angles work best to create definition.",
+    square: "Square faces have a strong, angular jawline and typically a broader forehead. Styles that soften angles while maintaining proportion are ideal.",
+    heart: "Heart-shaped faces have a wider forehead and cheekbones with a narrow chin. Balancing the width at the top with fuller styles at the jawline works well.",
+    long: "Long faces are longer than they are wide with high foreheads. Styles that create width and minimize height help balance proportions.",
+    diamond: "Diamond faces have narrow foreheads and jawlines with wide cheekbones. Styles that add width at the forehead and jawline are most flattering.",
+    triangle: "Triangle faces have a wider jawline that narrows at the forehead. Styles that add volume at the top help balance the proportions."
   };
   
-  return descriptions[faceShape] || "A análise do formato do rosto ajuda a determinar os cortes de cabelo mais favorecedores para suas características.";
+  return descriptions[faceShape] || "Face shape analysis helps determine the most flattering haircuts for your features.";
 };
