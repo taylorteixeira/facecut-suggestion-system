@@ -11,7 +11,7 @@ interface HaircutRecommendationProps {
 }
 
 const HaircutCard: React.FC<{ haircut: Haircut }> = ({ haircut }) => {
-  // Use placeholder image for development
+  // Usar imagem placeholder para desenvolvimento
   const imageUrl = getPlaceholderImage(haircut);
   
   return (
@@ -20,7 +20,7 @@ const HaircutCard: React.FC<{ haircut: Haircut }> = ({ haircut }) => {
         <img 
           src={imageUrl} 
           alt={haircut.name} 
-          className="haircut-card-image"
+          className="haircut-card-image h-64 w-full object-cover rounded-t-md"
         />
         <div className="absolute bottom-0 right-0 bg-haircut-blue text-white rounded-tl-md px-2 py-1 text-xs font-medium">
           {haircut.rating.toFixed(1)} ★
@@ -75,12 +75,12 @@ const HaircutRecommendation: React.FC<HaircutRecommendationProps> = ({
     return (
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle className="text-xl">Haircut Recommendations</CardTitle>
+          <CardTitle className="text-xl">Recomendações de Cortes</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center p-6">
             <p className="text-muted-foreground">
-              Position your face in the camera view to get personalized haircut recommendations.
+              Posicione seu rosto na visualização da câmera para obter recomendações personalizadas de cortes de cabelo.
             </p>
           </div>
         </CardContent>
@@ -93,7 +93,7 @@ const HaircutRecommendation: React.FC<HaircutRecommendationProps> = ({
       <CardHeader>
         <CardTitle className="text-xl flex items-center">
           <CheckCircle className="h-5 w-5 mr-2 text-haircut-blue" />
-          Recommended Haircuts
+          Cortes de Cabelo Recomendados
         </CardTitle>
       </CardHeader>
       <CardContent>

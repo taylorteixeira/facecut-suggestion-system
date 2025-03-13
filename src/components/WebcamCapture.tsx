@@ -18,7 +18,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   
-  // Initialize face detection models
+  // Inicializar modelos de detecção facial
   useEffect(() => {
     const initModels = async () => {
       try {
@@ -26,16 +26,16 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
         await loadModels();
         setIsModelLoading(false);
         toast({
-          title: "Models loaded",
-          description: "Face detection is ready to use",
+          title: "Modelos carregados",
+          description: "Detecção facial pronta para uso",
         });
       } catch (err) {
-        console.error("Model loading error:", err);
-        setError('Failed to load face detection models. Please check your internet connection and refresh.');
+        console.error("Erro ao carregar modelo:", err);
+        setError('Falha ao carregar modelos de detecção facial. Verifique sua conexão com a internet e atualize a página.');
         setIsModelLoading(false);
         toast({
-          title: "Error",
-          description: "Failed to load face detection models",
+          title: "Erro",
+          description: "Falha ao carregar modelos de detecção facial",
           variant: "destructive",
         });
       }
@@ -43,7 +43,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
     
     initModels();
     
-    // Clean up
+    // Limpeza
     return () => {
       if (videoRef.current && videoRef.current.srcObject) {
         const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
@@ -52,7 +52,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
     };
   }, [toast]);
   
-  // Start webcam
+  // Iniciar webcam
   const startCapture = async () => {
     try {
       const constraints = {
@@ -69,22 +69,22 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
         videoRef.current.srcObject = stream;
         setIsCapturing(true);
         toast({
-          title: "Camera started",
-          description: "Position your face in the frame",
+          title: "Câmera iniciada",
+          description: "Posicione seu rosto no quadro",
         });
       }
     } catch (err) {
-      console.error("Camera access error:", err);
-      setError('Could not access webcam. Please check permissions and try again.');
+      console.error("Erro de acesso à câmera:", err);
+      setError('Não foi possível acessar a webcam. Verifique as permissões e tente novamente.');
       toast({
-        title: "Camera Error",
-        description: "Could not access your camera",
+        title: "Erro de Câmera",
+        description: "Não foi possível acessar sua câmera",
         variant: "destructive",
       });
     }
   };
   
-  // Stop webcam
+  // Parar webcam
   const stopCapture = () => {
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
@@ -92,7 +92,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
       videoRef.current.srcObject = null;
       setIsCapturing(false);
       
-      // Clear canvas
+      // Limpar canvas
       if (canvasRef.current) {
         const ctx = canvasRef.current.getContext('2d');
         if (ctx) {
@@ -101,12 +101,12 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
       }
       
       toast({
-        title: "Camera stopped",
+        title: "Câmera parada",
       });
     }
   };
   
-  // Detect face in current video frame
+  // Detectar rosto no quadro de vídeo atual
   const detectFaceInVideo = async () => {
     if (videoRef.current && canvasRef.current) {
       try {
@@ -121,25 +121,25 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
             faceData.landmarks
           );
         } else if (isCapturing) {
-          // Clear canvas if no face detected
+          // Limpar canvas se nenhum rosto for detectado
           const ctx = canvasRef.current.getContext('2d');
           if (ctx) {
             ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
           }
         }
       } catch (err) {
-        console.error('Error detecting face:', err);
+        console.error('Erro ao detectar rosto:', err);
       }
     }
   };
   
-  // Run face detection when video is playing
+  // Executar detecção facial quando o vídeo estiver em reprodução
   useEffect(() => {
     if (!isCapturing || isModelLoading) return;
     
     const interval = setInterval(() => {
       detectFaceInVideo();
-    }, 200); // Check every 200ms
+    }, 200); // Verificar a cada 200ms
     
     return () => clearInterval(interval);
   }, [isCapturing, isModelLoading]);
@@ -169,7 +169,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
             className="bg-haircut-blue hover:bg-blue-600 transition-colors"
           >
             <Camera className="mr-2 h-4 w-4" />
-            {isModelLoading ? 'Loading...' : 'Start Camera'}
+            {isModelLoading ? 'Carregando...' : 'Iniciar Câmera'}
           </Button>
         ) : (
           <Button 
@@ -177,7 +177,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
             variant="outline" 
             className="bg-white/80 hover:bg-white"
           >
-            Stop Camera
+            Parar Câmera
           </Button>
         )}
       </div>
@@ -191,7 +191,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
               variant="outline" 
               className="bg-white text-black hover:bg-gray-200"
             >
-              Dismiss
+              Fechar
             </Button>
           </div>
         </div>
@@ -201,7 +201,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
         <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white">
           <div className="text-center">
             <div className="w-8 h-8 border-4 border-t-haircut-blue border-white/30 rounded-full animate-spin mx-auto mb-2"></div>
-            <p>Loading face detection models...</p>
+            <p>Carregando modelos de detecção facial...</p>
           </div>
         </div>
       )}

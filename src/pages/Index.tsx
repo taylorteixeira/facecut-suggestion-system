@@ -17,12 +17,14 @@ const Index = () => {
   const [recommendations, setRecommendations] = useState<Haircut[]>([]);
   const [activeTab, setActiveTab] = useState<string>('camera');
   
-  // Handle face detection
+  // Lidar com detecção facial
   const handleFaceDetected = (data: FaceData | null) => {
     setFaceData(data);
     
     if (data && data.faceShape) {
-      const haircuts = getRecommendedHaircuts(data.faceShape);
+      // Usar a propriedade gender se disponível, ou 'feminino' como padrão
+      const gender = data.gender || 'feminino';
+      const haircuts = getRecommendedHaircuts(data.faceShape, gender);
       setRecommendations(haircuts);
     }
   };
@@ -35,10 +37,10 @@ const Index = () => {
         <div className="max-w-5xl mx-auto">
           <Alert className="mb-6 bg-white">
             <Info className="h-4 w-4" />
-            <AlertTitle>Welcome to FaceCut</AlertTitle>
+            <AlertTitle>Bem-vindo ao FaceCut</AlertTitle>
             <AlertDescription>
-              Our facial analysis system detects your face shape and suggests suitable haircut styles.
-              Start by enabling your camera and positioning your face in the frame.
+              Nosso sistema de análise facial detecta o formato do seu rosto e sugere estilos de corte de cabelo adequados.
+              Comece habilitando sua câmera e posicionando seu rosto no quadro.
             </AlertDescription>
           </Alert>
           
@@ -48,11 +50,11 @@ const Index = () => {
                 <TabsList className="grid grid-cols-2 w-full">
                   <TabsTrigger value="camera" className="flex items-center">
                     <Camera className="mr-2 h-4 w-4" />
-                    Camera
+                    Câmera
                   </TabsTrigger>
                   <TabsTrigger value="results" className="flex items-center">
                     <UserRound className="mr-2 h-4 w-4" />
-                    Analysis
+                    Análise
                   </TabsTrigger>
                 </TabsList>
                 
@@ -80,9 +82,9 @@ const Index = () => {
                     <Card>
                       <CardContent className="p-6 text-center">
                         <UserRound className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-medium mb-2">No Face Detected</h3>
+                        <h3 className="text-lg font-medium mb-2">Nenhum Rosto Detectado</h3>
                         <p className="text-muted-foreground">
-                          Switch to the Camera tab and position your face in the frame for analysis.
+                          Alterne para a guia Câmera e posicione seu rosto no quadro para análise.
                         </p>
                       </CardContent>
                     </Card>
