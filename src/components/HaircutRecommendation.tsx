@@ -15,7 +15,7 @@ const HaircutCard: React.FC<{ haircut: Haircut }> = ({ haircut }) => {
   const imageUrl = getPlaceholderImage(haircut);
   
   return (
-    <div className="haircut-card">
+    <div className="haircut-card bg-white rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow">
       <div className="relative">
         <img 
           src={imageUrl} 
@@ -52,6 +52,8 @@ const HaircutRecommendation: React.FC<HaircutRecommendationProps> = ({
   haircuts, 
   isLoading = false 
 }) => {
+  console.log("Recomendações recebidas:", haircuts);
+  
   if (isLoading) {
     return (
       <Card className="mt-6">
@@ -71,7 +73,7 @@ const HaircutRecommendation: React.FC<HaircutRecommendationProps> = ({
     );
   }
   
-  if (haircuts.length === 0) {
+  if (!haircuts || haircuts.length === 0) {
     return (
       <Card className="mt-6">
         <CardHeader>

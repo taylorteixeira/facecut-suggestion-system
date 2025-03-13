@@ -1,3 +1,4 @@
+
 // Serviço de detecção facial usando TensorFlow.js e face-api.js
 
 import * as tf from '@tensorflow/tfjs';
@@ -135,11 +136,25 @@ export const drawFaceDetection = (
   detection: faceapi.FaceDetection,
   landmarks: faceapi.FaceLandmarks68
 ) => {
+  // Verificar se o elemento tem dimensões válidas
+  if (!imageElement.width || !imageElement.height) {
+    console.log('Elemento de imagem/vídeo sem dimensões válidas:', 
+      { width: imageElement.width, height: imageElement.height });
+    return;
+  }
+  
   // Redimensionar canvas para combinar com a imagem
   const displaySize = {
     width: imageElement.width,
     height: imageElement.height
   };
+  
+  // Verificar dimensões válidas antes de redimensionar
+  if (displaySize.width === 0 || displaySize.height === 0) {
+    console.log('Dimensões inválidas para redimensionamento:', displaySize);
+    return;
+  }
+  
   faceapi.matchDimensions(canvas, displaySize);
   
   // Desenhar detecções e pontos de referência

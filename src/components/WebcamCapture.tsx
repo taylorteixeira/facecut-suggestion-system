@@ -108,28 +108,51 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
   
   // Detectar rosto no quadro de vídeo atual
   const detectFaceInVideo = async () => {
-    if (videoRef.current && canvasRef.current) {
-      try {
-        const faceData = await detectFace(videoRef.current);
-        onFaceDetected(faceData);
-        
-        if (faceData && faceData.detection && faceData.landmarks) {
-          drawFaceDetection(
-            canvasRef.current,
-            videoRef.current,
-            faceData.detection,
-            faceData.landmarks
-          );
-        } else if (isCapturing) {
-          // Limpar canvas se nenhum rosto for detectado
-          const ctx = canvasRef.current.getContext('2d');
-          if (ctx) {
-            ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-          }
-        }
-      } catch (err) {
-        console.error('Erro ao detectar rosto:', err);
+    if (!videoRef.current || !canvasRef.current) return;
+    
+    try {
+      // Verificar se o vídeo está pronto e tem dimensões válidas
+      if (videoRef.current.readyState !== 4 || 
+          videoRef.current.videoWidth === 0 || 
+          videoRef.current.videoHeight === 0) {
+        console.log("Vídeo não está pronto ou tem dimensões zero:", {
+          readyState: videoRef.current.readyState,
+          width: videoRef.current.videoWidth,
+          height: videoRef.current.videoHeight
+        });
+        return;
       }
+      
+      const faceData = await detectFace(videoRef.current);
+      
+      // Atualizar canvas com dimensões corretas do vídeo se necessário
+      if (canvasRef.current.width !== videoRef.current.videoWidth || 
+          canvasRef.current.height !== videoRef.current.videoHeight) {
+        canvasRef.current.width = videoRef.current.videoWidth;
+        canvasRef.current.height = videoRef.current.videoHeight;
+      }
+      
+      // Limpar canvas
+      const ctx = canvasRef.current.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      }
+      
+      // Desenhar detecção se houver um rosto
+      if (faceData && faceData.detection && faceData.landmarks) {
+        drawFaceDetection(
+          canvasRef.current,
+          videoRef.current,
+          faceData.detection,
+          faceData.landmarks
+        );
+      }
+      
+      // Sempre chamar onFaceDetected com os dados atuais (mesmo que seja null)
+      onFaceDetected(faceData);
+    } catch (err) {
+      console.error('Erro ao detectar rosto:', err);
+      // Não mostramos o erro para o usuário para não interromper a experiência
     }
   };
   
@@ -137,11 +160,32 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
   useEffect(() => {
     if (!isCapturing || isModelLoading) return;
     
-    const interval = setInterval(() => {
-      detectFaceInVideo();
-    }, 200); // Verificar a cada 200ms
+    // Aguardar o vídeo carregar completamente
+    const waitForVideoReady = () => {
+      if (videoRef.current && 
+          videoRef.current.readyState === 4 &&
+          videoRef.current.videoWidth > 0 && 
+          videoRef.current.videoHeight > 0) {
+        
+        // Vídeo está pronto, ajustar canvas
+        if (canvasRef.current) {
+          canvasRef.current.width = videoRef.current.videoWidth;
+          canvasRef.current.height = videoRef.current.videoHeight;
+        }
+        
+        // Iniciar detecção regular
+        const interval = setInterval(() => {
+          detectFaceInVideo();
+        }, 200); // Verificar a cada 200ms
+        
+        return () => clearInterval(interval);
+      } else {
+        // Tentar novamente em 100ms
+        setTimeout(waitForVideoReady, 100);
+      }
+    };
     
-    return () => clearInterval(interval);
+    waitForVideoReady();
   }, [isCapturing, isModelLoading]);
   
   return (
@@ -157,8 +201,6 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
       <canvas
         ref={canvasRef}
         className="absolute inset-0 pointer-events-none"
-        width="640"
-        height="480"
       />
       
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
