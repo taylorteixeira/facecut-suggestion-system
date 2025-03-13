@@ -1,4 +1,3 @@
-
 // Serviço de detecção facial usando TensorFlow.js e face-api.js
 
 import * as tf from '@tensorflow/tfjs';
@@ -17,8 +16,8 @@ export interface FaceData {
 
 let modelsLoaded = false;
 
-// URLs dos modelos (links CDN diretos para garantir acesso confiável)
-const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+// URLs dos modelos (link CDN atualizado que contém todos os modelos necessários)
+const MODEL_URL = 'https://vladmandic.github.io/face-api/model';
 
 export const loadModels = async () => {
   if (modelsLoaded) return;
@@ -28,7 +27,6 @@ export const loadModels = async () => {
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
     await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
     await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-    // Adicionando o modelo de gênero para identificar rostos femininos
     await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
     modelsLoaded = true;
     console.log('Modelos de detecção facial carregados com sucesso');
