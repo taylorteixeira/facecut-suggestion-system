@@ -16,13 +16,17 @@ export interface FaceData {
 
 let modelsLoaded = false;
 
+// Model URLs (direct CDN links to ensure reliable access)
+const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+
 export const loadModels = async () => {
   if (modelsLoaded) return;
   
   try {
-    await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-    await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
-    await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+    console.log('Loading face detection models from:', MODEL_URL);
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
     modelsLoaded = true;
     console.log('Face detection models loaded successfully');
   } catch (error) {

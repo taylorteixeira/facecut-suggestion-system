@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Camera } from 'lucide-react';
 import { loadModels, detectFace, FaceData, drawFaceDetection } from '@/services/faceDetectionService';
+import { useToast } from "@/hooks/use-toast";
 
 interface WebcamCaptureProps {
   onFaceDetected: (faceData: FaceData | null) => void;
@@ -15,16 +16,28 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
   const [isCapturing, setIsCapturing] = useState(false);
   const [isModelLoading, setIsModelLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
   
   // Initialize face detection models
   useEffect(() => {
     const initModels = async () => {
       try {
+        setIsModelLoading(true);
         await loadModels();
         setIsModelLoading(false);
+        toast({
+          title: "Models loaded",
+          description: "Face detection is ready to use",
+        });
       } catch (err) {
-        setError('Failed to load face detection models. Please refresh and try again.');
+        console.error("Model loading error:", err);
+        setError('Failed to load face detection models. Please check your internet connection and refresh.');
         setIsModelLoading(false);
+        toast({
+          title: "Error",
+          description: "Failed to load face detection models",
+          variant: "destructive",
+        });
       }
     };
     
@@ -37,7 +50,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
         tracks.forEach(track => track.stop());
       }
     };
-  }, []);
+  }, [toast]);
   
   // Start webcam
   const startCapture = async () => {
@@ -55,9 +68,19 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         setIsCapturing(true);
+        toast({
+          title: "Camera started",
+          description: "Position your face in the frame",
+        });
       }
     } catch (err) {
+      console.error("Camera access error:", err);
       setError('Could not access webcam. Please check permissions and try again.');
+      toast({
+        title: "Camera Error",
+        description: "Could not access your camera",
+        variant: "destructive",
+      });
     }
   };
   
@@ -76,6 +99,10 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
           ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         }
       }
+      
+      toast({
+        title: "Camera stopped",
+      });
     }
   };
   
@@ -93,6 +120,12 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onFaceDetected, className
             faceData.detection,
             faceData.landmarks
           );
+        } else if (isCapturing) {
+          // Clear canvas if no face detected
+          const ctx = canvasRef.current.getContext('2d');
+          if (ctx) {
+            ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          }
         }
       } catch (err) {
         console.error('Error detecting face:', err);

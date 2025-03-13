@@ -1,9 +1,11 @@
 
 # Face API Models Directory
 
-This directory should contain the face-api.js models for face detection, landmark detection, and recognition.
+This application uses face-api.js models for face detection, landmark detection, and recognition.
 
-The models can be downloaded from:
+The application now loads the models directly from a CDN, so you don't need to manually download them.
+
+If you want to use local models instead of the CDN, you can download them from:
 https://github.com/vladmandic/face-api/tree/master/model
 
 Required models:
@@ -15,4 +17,4 @@ Required models:
 - face_recognition_model-shard1
 - face_recognition_model-shard2
 
-These files will be downloaded automatically when the application first runs.
+After downloading, place these files in this directory and update the MODEL_URL in src/services/faceDetectionService.ts to use '/models' instead of the CDN URL.
