@@ -2,7 +2,6 @@ import React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BeardStyle } from "@/services/haircutRecommendationService"
 import { Badge } from "@/components/ui/badge"
-import { Scissors, Clock } from "lucide-react"
 
 interface BeardRecommendationProps {
   beards: BeardStyle[]

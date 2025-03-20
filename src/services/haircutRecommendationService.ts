@@ -317,6 +317,16 @@ const beardsDatabase: BeardStyle[] = [
     maintenanceLevel: "baixa",
     rating: 4.6,
   },
+  {
+    id: "beard-square-3",
+    name: "Barba Degradê",
+    description:
+      "Barba com transição suave que harmoniza com os traços angulares.",
+    imageUrl: "https://i.imgur.com/barbaDegrade.jpg",
+    suitableFor: ["square"],
+    maintenanceLevel: "alta",
+    rating: 4.8,
+  },
 
   // Barbas para Rosto Coração
   {
@@ -335,6 +345,79 @@ const beardsDatabase: BeardStyle[] = [
       "Barba média que adiciona volume ao queixo mantendo proporção.",
     imageUrl: "https://i.imgur.com/barbaMediaBalanceada.jpg",
     suitableFor: ["heart"],
+    maintenanceLevel: "média",
+    rating: 4.7,
+  },
+  {
+    id: "beard-heart-3",
+    name: "Barba Curta Estruturada",
+    description:
+      "Barba curta que adiciona estrutura ao queixo sem peso excessivo.",
+    imageUrl: "https://i.imgur.com/barbaCurtaEstruturada.jpg",
+    suitableFor: ["heart"],
+    maintenanceLevel: "baixa",
+    rating: 4.6,
+  },
+
+  // Barbas para Rosto Longo
+  {
+    id: "beard-long-1",
+    name: "Barba Lateral Cheia",
+    description:
+      "Barba com volume nas laterais para reduzir o comprimento aparente do rosto.",
+    imageUrl: "https://i.imgur.com/barbaLateralCheia.jpg",
+    suitableFor: ["long"],
+    maintenanceLevel: "alta",
+    rating: 4.7,
+  },
+  {
+    id: "beard-long-2",
+    name: "Barba Curta Volumosa",
+    description:
+      "Barba curta com volume que ajuda a equilibrar as proporções faciais.",
+    imageUrl: "https://i.imgur.com/barbaCurtaVolumosa.jpg",
+    suitableFor: ["long"],
+    maintenanceLevel: "média",
+    rating: 4.6,
+  },
+
+  // Barbas para Rosto Diamante
+  {
+    id: "beard-diamond-1",
+    name: "Barba Média Equilibrada",
+    description: "Barba que equilibra as maçãs do rosto proeminentes.",
+    imageUrl: "https://i.imgur.com/barbaMediaEquilibrada.jpg",
+    suitableFor: ["diamond"],
+    maintenanceLevel: "média",
+    rating: 4.7,
+  },
+  {
+    id: "beard-diamond-2",
+    name: "Barba Curta Definida",
+    description: "Barba curta que mantém a harmonia com os traços faciais.",
+    imageUrl: "https://i.imgur.com/barbaCurtaDefinida.jpg",
+    suitableFor: ["diamond"],
+    maintenanceLevel: "baixa",
+    rating: 4.6,
+  },
+
+  // Barbas para Rosto Triangular
+  {
+    id: "beard-triangle-1",
+    name: "Barba Curta Uniforme",
+    description:
+      "Barba curta que mantém o equilíbrio com a mandíbula mais larga.",
+    imageUrl: "https://i.imgur.com/barbaCurtaUniforme.jpg",
+    suitableFor: ["triangle"],
+    maintenanceLevel: "baixa",
+    rating: 4.6,
+  },
+  {
+    id: "beard-triangle-2",
+    name: "Barba Média Estruturada",
+    description: "Barba média que ajuda a equilibrar as proporções faciais.",
+    imageUrl: "https://i.imgur.com/barbaMediaEstruturada.jpg",
+    suitableFor: ["triangle"],
     maintenanceLevel: "média",
     rating: 4.7,
   },
@@ -366,20 +449,164 @@ export const getPlaceholderImage = (haircut: Haircut): string => {
   )
 }
 
-export const getRecommendedHaircuts = (
-  faceShape: FaceShape,
-  limit: number = 5
-): Haircut[] => {
-  // Filter haircuts suitable for the detected face shape
-  const suitable = haircutsDatabase.filter((haircut) =>
-    haircut.suitableFor.includes(faceShape)
-  )
-
-  // Sort by rating (highest first)
-  const sorted = suitable.sort((a, b) => b.rating - a.rating)
-
-  // Return the top N recommendations
-  return sorted.slice(0, limit)
+export const getRecommendedHaircuts = (faceShape: FaceShape): Haircut[] => {
+  const recommendations: Record<FaceShape, Haircut[]> = {
+    oval: [
+      {
+        id: "pompadour",
+        name: "Pompadour Moderno",
+        description:
+          "Um corte clássico com volume na parte superior e laterais mais curtas. Ideal para realçar suas proporções equilibradas.",
+        imageUrl: "/images/haircuts/pompadour.jpg",
+        suitableFor: ["oval"],
+        attributes: ["versátil", "moderno", "sofisticado"],
+        rating: 4.8,
+      },
+      {
+        id: "textured-crop",
+        name: "Crop Texturizado",
+        description:
+          "Um corte moderno com textura e movimento. Perfeito para realçar a versatilidade do seu formato facial.",
+        imageUrl: "/images/haircuts/textured-crop.jpg",
+        suitableFor: ["oval"],
+        attributes: ["contemporâneo", "versátil", "baixa manutenção"],
+        rating: 4.6,
+      },
+    ],
+    round: [
+      {
+        id: "angular-pompadour",
+        name: "Pompadour Angular",
+        description:
+          "Um corte com ângulos definidos e volume na parte superior para criar a ilusão de comprimento.",
+        imageUrl: "/images/haircuts/angular-pompadour.jpg",
+        suitableFor: ["round"],
+        attributes: ["estruturado", "moderno", "definido"],
+        rating: 4.7,
+      },
+      {
+        id: "side-swept",
+        name: "Side Swept",
+        description:
+          "Um corte com franja lateral para criar linhas mais longas e quebrar a redondeza do rosto.",
+        imageUrl: "/images/haircuts/side-swept.jpg",
+        suitableFor: ["round"],
+        attributes: ["versátil", "moderno", "suave"],
+        rating: 4.5,
+      },
+    ],
+    square: [
+      {
+        id: "textured-quiff",
+        name: "Quiff Texturizado",
+        description:
+          "Um corte com volume e textura para suavizar os ângulos do rosto.",
+        imageUrl: "/images/haircuts/textured-quiff.jpg",
+        suitableFor: ["square"],
+        attributes: ["moderno", "texturizado", "versátil"],
+        rating: 4.7,
+      },
+      {
+        id: "longer-top",
+        name: "Topo Mais Longo",
+        description:
+          "Um corte com mais comprimento no topo para criar contraste com as laterais mais curtas.",
+        imageUrl: "/images/haircuts/longer-top.jpg",
+        suitableFor: ["square"],
+        attributes: ["contemporâneo", "estruturado", "versátil"],
+        rating: 4.6,
+      },
+    ],
+    heart: [
+      {
+        id: "side-parted",
+        name: "Lateral Partido",
+        description:
+          "Um corte com divisão lateral para equilibrar a largura da testa.",
+        imageUrl: "/images/haircuts/side-parted.jpg",
+        suitableFor: ["heart"],
+        attributes: ["clássico", "sofisticado", "versátil"],
+        rating: 4.8,
+      },
+      {
+        id: "textured-fringe",
+        name: "Franja Texturizada",
+        description:
+          "Um corte com franja texturizada para criar equilíbrio com a mandíbula mais estreita.",
+        imageUrl: "/images/haircuts/textured-fringe.jpg",
+        suitableFor: ["heart"],
+        attributes: ["moderno", "versátil", "suave"],
+        rating: 4.6,
+      },
+    ],
+    long: [
+      {
+        id: "textured-crop-long",
+        name: "Crop Texturizado Longo",
+        description:
+          "Um corte com volume lateral para criar a ilusão de largura.",
+        imageUrl: "/images/haircuts/textured-crop-long.jpg",
+        suitableFor: ["long"],
+        attributes: ["moderno", "versátil", "estruturado"],
+        rating: 4.7,
+      },
+      {
+        id: "side-swept-long",
+        name: "Side Swept Longo",
+        description:
+          "Um corte com franja lateral e volume nas laterais para equilibrar o comprimento do rosto.",
+        imageUrl: "/images/haircuts/side-swept-long.jpg",
+        suitableFor: ["long"],
+        attributes: ["versátil", "moderno", "suave"],
+        rating: 4.5,
+      },
+    ],
+    diamond: [
+      {
+        id: "textured-top",
+        name: "Topo Texturizado",
+        description:
+          "Um corte com volume e textura no topo para equilibrar as maçãs do rosto proeminentes.",
+        imageUrl: "/images/haircuts/textured-top.jpg",
+        suitableFor: ["diamond"],
+        attributes: ["moderno", "versátil", "estruturado"],
+        rating: 4.7,
+      },
+      {
+        id: "side-parted-diamond",
+        name: "Lateral Partido Diamante",
+        description:
+          "Um corte com divisão lateral para criar equilíbrio com o formato diamante.",
+        imageUrl: "/images/haircuts/side-parted-diamond.jpg",
+        suitableFor: ["diamond"],
+        attributes: ["clássico", "sofisticado", "versátil"],
+        rating: 4.6,
+      },
+    ],
+    triangle: [
+      {
+        id: "volume-top",
+        name: "Volume no Topo",
+        description:
+          "Um corte com mais volume na parte superior para equilibrar a mandíbula mais larga.",
+        imageUrl: "/images/haircuts/volume-top.jpg",
+        suitableFor: ["triangle"],
+        attributes: ["moderno", "estruturado", "versátil"],
+        rating: 4.7,
+      },
+      {
+        id: "textured-sides",
+        name: "Laterais Texturizadas",
+        description:
+          "Um corte com textura nas laterais para criar equilíbrio com a mandíbula.",
+        imageUrl: "/images/haircuts/textured-sides.jpg",
+        suitableFor: ["triangle"],
+        attributes: ["contemporâneo", "versátil", "suave"],
+        rating: 4.5,
+      },
+    ],
+  }
+  return recommendations[faceShape]
 }
 
 export const getAllHaircuts = (): Haircut[] => {
@@ -398,20 +625,19 @@ export const getHaircutsForFaceShape = (faceShape: FaceShape): Haircut[] => {
 
 export const getFaceShapeDescription = (faceShape: FaceShape): string => {
   const descriptions: Record<FaceShape, string> = {
-    oval: "Rostos ovais são bem equilibrados com testa levemente mais larga e linha do queixo suavemente arredondada. Este formato versátil funciona bem com a maioria dos cortes.",
+    oval: "Seu rosto tem um formato oval, que é considerado o mais versátil. As proporções são equilibradas, com a mandíbula ligeiramente mais estreita que as maçãs do rosto.",
     round:
-      "Rostos redondos têm traços suaves com queixo arredondado e bochechas mais cheias. Estilos que adicionam altura e ângulos funcionam melhor para criar definição.",
+      "Seu rosto tem um formato redondo, com maçãs do rosto proeminentes e uma mandíbula mais suave. O comprimento e a largura são similares.",
     square:
-      "Rostos quadrados têm mandíbula forte e angular e geralmente testa mais larga. Estilos que suavizam os ângulos mantendo a proporção são ideais.",
+      "Seu rosto tem um formato quadrado, com uma mandíbula forte e ângulos bem definidos. A largura da testa, maçãs do rosto e mandíbula são similares.",
     heart:
-      "Rostos em formato de coração têm testa e maçãs do rosto mais largas com queixo estreito. Equilibrar a largura superior com estilos mais cheios na linha da mandíbula funciona bem.",
-    long: "Rostos longos são mais compridos do que largos com testas altas. Estilos que criam largura e minimizam a altura ajudam a equilibrar as proporções.",
+      "Seu rosto tem um formato coração, com uma testa mais larga que se afunila em direção ao queixo. As maçãs do rosto são proeminentes.",
+    long: "Seu rosto tem um formato alongado, com comprimento maior que a largura. A mandíbula e a testa têm larguras similares.",
     diamond:
-      "Rostos diamante têm testa e mandíbula estreitas com maçãs do rosto largas. Estilos que adicionam largura na testa e mandíbula são mais favoráveis.",
+      "Seu rosto tem um formato diamante, com maçãs do rosto proeminentes e testa e mandíbula mais estreitas.",
     triangle:
-      "Rostos triangulares têm mandíbula mais larga que afina na testa. Estilos que adicionam volume no topo ajudam a equilibrar as proporções.",
+      "Seu rosto tem um formato triangular, com uma mandíbula mais larga que se afunila em direção à testa.",
   }
-
   return (
     descriptions[faceShape] ||
     "A análise do formato do rosto ajuda a determinar os cortes de cabelo mais favoráveis para seus traços."
@@ -445,19 +671,21 @@ export const getBeardRecommendationDescription = (
   faceShape: FaceShape
 ): string => {
   const descriptions: Record<FaceShape, string> = {
-    oval: "Para rostos ovais, a maioria dos estilos de barba funciona bem. Recomendamos manter as proporções equilibradas.",
+    oval: "Para rostos ovais, que são naturalmente equilibrados, você tem a liberdade de experimentar diversos estilos de barba. Recomendamos manter as proporções harmoniosas com uma barba bem aparada que acompanhe o contorno natural do rosto.",
     round:
-      "Para rostos redondos, barbas que criam ângulos e alongam o rosto são ideais.",
+      "Para rostos redondos, o ideal são barbas que criam ângulos e alongam visualmente o rosto. Opte por estilos que mantenham volume no queixo e laterais mais curtas para criar definição.",
     square:
-      "Para rostos quadrados, barbas com contornos mais suaves ajudam a equilibrar os ângulos fortes.",
+      "Para rostos quadrados, que já possuem ângulos marcantes, sugerimos barbas com contornos mais suaves para equilibrar os traços. Evite barbas muito angulares e prefira transições suaves.",
     heart:
-      "Para rostos coração, barbas mais cheias no queixo ajudam a equilibrar a parte superior mais larga.",
-    long: "Para rostos longos, barbas mais curtas nas laterais e volume moderado no queixo são mais favoráveis.",
+      "Para rostos coração, com testa mais larga e queixo mais fino, recomendamos barbas que adicionem volume na parte inferior do rosto. Uma barba mais cheia no queixo ajuda a equilibrar as proporções.",
+    long: "Para rostos longos, o ideal são barbas que criem largura sem adicionar muito comprimento. Mantenha volume nas laterais e evite barbas muito longas no queixo.",
     diamond:
-      "Para rostos diamante, barbas médias com volume nas laterais ajudam a equilibrar as maçãs do rosto salientes.",
+      "Para rostos diamante, com maçãs do rosto proeminentes, sugerimos barbas médias que ajudem a suavizar os ângulos. Mantenha um equilíbrio entre volume e definição.",
     triangle:
-      "Para rostos triangulares, barbas mais curtas com volume controlado complementam bem a estrutura facial.",
+      "Para rostos triangulares, com mandíbula mais larga, recomendamos barbas mais curtas e uniformes que não acentuem a largura da parte inferior. Foque em estilos que mantenham proporção com a parte superior do rosto.",
   }
-
-  return descriptions[faceShape]
+  return (
+    descriptions[faceShape] ||
+    "A escolha do estilo de barba ideal depende do seu formato de rosto e pode ajudar a equilibrar suas características faciais."
+  )
 }

@@ -1,127 +1,169 @@
-
 // Face detection service using TensorFlow.js and face-api.js
 
-import * as tf from '@tensorflow/tfjs';
-import * as faceapi from '@vladmandic/face-api';
+import * as tf from "@tensorflow/tfjs"
+import * as faceapi from "@vladmandic/face-api"
 
 // Face shape classifications
-export type FaceShape = 'oval' | 'round' | 'square' | 'heart' | 'long' | 'diamond' | 'triangle';
+export type FaceShape =
+  | "oval"
+  | "round"
+  | "square"
+  | "heart"
+  | "long"
+  | "diamond"
+  | "triangle"
 
 export interface FaceData {
-  faceShape: FaceShape;
-  confidence: number;
-  landmarks?: faceapi.FaceLandmarks68;
-  detection?: faceapi.FaceDetection;
+  faceShape: FaceShape
+  confidence: number
+  landmarks?: faceapi.FaceLandmarks68
+  detection?: faceapi.FaceDetection
 }
 
-let modelsLoaded = false;
+let modelsLoaded = false
 
 // Model URLs (direct CDN links to ensure reliable access)
-const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models"
 
 export const loadModels = async () => {
-  if (modelsLoaded) return;
-  
-  try {
-    console.log('Loading face detection models from:', MODEL_URL);
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-    modelsLoaded = true;
-    console.log('Face detection models loaded successfully');
-  } catch (error) {
-    console.error('Error loading face detection models:', error);
-    throw new Error('Failed to load face detection models');
-  }
-};
+  if (modelsLoaded) return
 
-export const detectFace = async (imageElement: HTMLImageElement | HTMLVideoElement): Promise<FaceData | null> => {
-  if (!modelsLoaded) {
-    await loadModels();
+  try {
+    console.log("Loading face detection models from:", MODEL_URL)
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)
+    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
+    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+    modelsLoaded = true
+    console.log("Face detection models loaded successfully")
+  } catch (error) {
+    console.error("Error loading face detection models:", error)
+    throw new Error("Failed to load face detection models")
   }
-  
+}
+
+export const detectFace = async (
+  imageElement: HTMLImageElement | HTMLVideoElement
+): Promise<FaceData | null> => {
+  if (!modelsLoaded) {
+    await loadModels()
+  }
+
   try {
     const detections = await faceapi
       .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks();
-    
+      .withFaceLandmarks()
+
     if (!detections) {
-      return null;
+      return null
     }
-    
+
     // Analyze face shape based on landmarks
-    const faceShape = analyzeFaceShape(detections.landmarks);
-    
+    const faceShape = analyzeFaceShape(detections.landmarks)
+
     return {
       faceShape: faceShape.shape,
       confidence: faceShape.confidence,
       landmarks: detections.landmarks,
-      detection: detections.detection
-    };
+      detection: detections.detection,
+    }
   } catch (error) {
-    console.error('Error detecting face:', error);
-    return null;
+    console.error("Error detecting face:", error)
+    return null
   }
-};
+}
 
 // Simplified algorithm to determine face shape based on landmarks
-const analyzeFaceShape = (landmarks: faceapi.FaceLandmarks68): { shape: FaceShape; confidence: number } => {
+const analyzeFaceShape = (
+  landmarks: faceapi.FaceLandmarks68
+): { shape: FaceShape; confidence: number } => {
   // Get face measurements
-  const jawline = landmarks.getJawOutline();
-  const nose = landmarks.getNose();
-  const mouth = landmarks.getMouth();
-  
+  const jawline = landmarks.getJawOutline()
+  const nose = landmarks.getNose()
+  const mouth = landmarks.getMouth()
+  const eyes = landmarks.getLeftEye().concat(landmarks.getRightEye())
+
   // Face width at the cheekbones
-  const cheekLeft = jawline[1];
-  const cheekRight = jawline[15];
-  const faceWidth = Math.abs(cheekRight.x - cheekLeft.x);
-  
+  const cheekLeft = jawline[1]
+  const cheekRight = jawline[15]
+  const faceWidth = Math.abs(cheekRight.x - cheekLeft.x)
+
   // Face height
-  const chin = jawline[8];
-  const foreheadY = jawline[0].y;
-  const faceHeight = Math.abs(chin.y - foreheadY);
-  
+  const chin = jawline[8]
+  const foreheadY = Math.min(jawline[0].y, jawline[16].y)
+  const faceHeight = Math.abs(chin.y - foreheadY)
+
   // Jaw width
-  const jawLeft = jawline[3];
-  const jawRight = jawline[13];
-  const jawWidth = Math.abs(jawRight.x - jawLeft.x);
-  
+  const jawLeft = jawline[3]
+  const jawRight = jawline[13]
+  const jawWidth = Math.abs(jawRight.x - jawLeft.x)
+
   // Forehead width
-  const foreheadWidth = Math.abs(jawline[0].x - jawline[16].x);
-  
+  const foreheadWidth = Math.abs(jawline[0].x - jawline[16].x)
+
+  // Cheekbone width
+  const cheekboneWidth = Math.abs(jawline[2].x - jawline[14].x)
+
+  // Face symmetry
+  const faceCenter = faceWidth / 2
+  const leftSideWidth = Math.abs(faceCenter - jawline[0].x)
+  const rightSideWidth = Math.abs(jawline[16].x - faceCenter)
+  const symmetryRatio =
+    Math.min(leftSideWidth, rightSideWidth) /
+    Math.max(leftSideWidth, rightSideWidth)
+
   // Calculate ratios
-  const widthToHeightRatio = faceWidth / faceHeight;
-  const jawToFaceWidthRatio = jawWidth / faceWidth;
-  const foreheadToJawRatio = foreheadWidth / jawWidth;
-  
-  // Simple classification based on ratios
-  // This is a simplified version - in a real app, you'd use a more sophisticated algorithm
-  
-  let shape: FaceShape = 'oval';
-  let confidence = 0.7; // Default confidence
-  
-  if (widthToHeightRatio > 0.85 && jawToFaceWidthRatio > 0.9) {
-    shape = 'round';
-    confidence = 0.8;
-  } else if (jawToFaceWidthRatio > 0.9 && foreheadToJawRatio < 1.1) {
-    shape = 'square';
-    confidence = 0.85;
-  } else if (foreheadToJawRatio > 1.2) {
-    shape = 'heart';
-    confidence = 0.75;
-  } else if (widthToHeightRatio < 0.65) {
-    shape = 'long';
-    confidence = 0.8;
-  } else if (foreheadToJawRatio < 0.9 && jawToFaceWidthRatio < 0.8) {
-    shape = 'triangle';
-    confidence = 0.7;
-  } else if (faceWidth / jawWidth > 1.2 && foreheadToJawRatio > 0.9 && foreheadToJawRatio < 1.1) {
-    shape = 'diamond';
-    confidence = 0.75;
+  const widthToHeightRatio = faceWidth / faceHeight
+  const jawToFaceWidthRatio = jawWidth / faceWidth
+  const foreheadToJawRatio = foreheadWidth / jawWidth
+  const cheekboneToJawRatio = cheekboneWidth / jawWidth
+
+  // Calculate confidence based on multiple factors
+  let confidence = 0.7
+  let shape: FaceShape = "oval"
+
+  // Improved classification based on multiple ratios and measurements
+  if (
+    widthToHeightRatio > 0.85 &&
+    jawToFaceWidthRatio > 0.9 &&
+    symmetryRatio > 0.95
+  ) {
+    shape = "round"
+    confidence = 0.85
+  } else if (
+    jawToFaceWidthRatio > 0.9 &&
+    foreheadToJawRatio < 1.1 &&
+    cheekboneToJawRatio > 0.95
+  ) {
+    shape = "square"
+    confidence = 0.9
+  } else if (foreheadToJawRatio > 1.2 && cheekboneToJawRatio > 1.1) {
+    shape = "heart"
+    confidence = 0.8
+  } else if (widthToHeightRatio < 0.65 && jawToFaceWidthRatio < 0.8) {
+    shape = "long"
+    confidence = 0.85
+  } else if (
+    foreheadToJawRatio < 0.9 &&
+    jawToFaceWidthRatio < 0.8 &&
+    cheekboneToJawRatio < 0.9
+  ) {
+    shape = "triangle"
+    confidence = 0.8
+  } else if (
+    faceWidth / jawWidth > 1.2 &&
+    foreheadToJawRatio > 0.9 &&
+    foreheadToJawRatio < 1.1 &&
+    cheekboneToJawRatio > 1.1
+  ) {
+    shape = "diamond"
+    confidence = 0.85
   }
-  
-  return { shape, confidence };
-};
+
+  // Adjust confidence based on symmetry
+  confidence *= 0.7 + symmetryRatio * 0.3
+
+  return { shape, confidence }
+}
 
 export const drawFaceDetection = (
   canvas: HTMLCanvasElement,
@@ -132,29 +174,32 @@ export const drawFaceDetection = (
   // Resize canvas to match the image
   const displaySize = {
     width: imageElement.width,
-    height: imageElement.height
-  };
-  faceapi.matchDimensions(canvas, displaySize);
-  
+    height: imageElement.height,
+  }
+  faceapi.matchDimensions(canvas, displaySize)
+
   // Draw detections and landmarks
-  const resizedDetection = faceapi.resizeResults({ detection, landmarks }, displaySize);
-  
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
+  const resizedDetection = faceapi.resizeResults(
+    { detection, landmarks },
+    displaySize
+  )
+
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
   // Draw face box
-  const { box } = resizedDetection.detection;
-  ctx.strokeStyle = '#4A90E2';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(box.x, box.y, box.width, box.height);
-  
+  const { box } = resizedDetection.detection
+  ctx.strokeStyle = "#4A90E2"
+  ctx.lineWidth = 2
+  ctx.strokeRect(box.x, box.y, box.width, box.height)
+
   // Draw landmarks
-  ctx.fillStyle = '#50E3C2';
-  resizedDetection.landmarks.positions.forEach(point => {
-    ctx.beginPath();
-    ctx.arc(point.x, point.y, 2, 0, 2 * Math.PI);
-    ctx.fill();
-  });
-};
+  ctx.fillStyle = "#50E3C2"
+  resizedDetection.landmarks.positions.forEach((point) => {
+    ctx.beginPath()
+    ctx.arc(point.x, point.y, 2, 0, 2 * Math.PI)
+    ctx.fill()
+  })
+}
