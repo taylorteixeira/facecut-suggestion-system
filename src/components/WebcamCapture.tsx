@@ -78,19 +78,34 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         setIsCapturing(true)
+
+        // Aguarda o vídeo estar pronto
+        await new Promise((resolve) => {
+          if (videoRef.current) {
+            videoRef.current.onloadedmetadata = () => {
+              // Configura as dimensões do canvas
+              if (canvasRef.current) {
+                canvasRef.current.width = videoRef.current!.videoWidth
+                canvasRef.current.height = videoRef.current!.videoHeight
+              }
+              resolve(true)
+            }
+          }
+        })
+
         toast({
-          title: "Camera started",
-          description: "Position your face in the frame",
+          title: "Câmera iniciada",
+          description: "Posicione seu rosto no enquadramento",
         })
       }
     } catch (err) {
-      console.error("Camera access error:", err)
+      console.error("Erro ao acessar câmera:", err)
       setError(
-        "Could not access webcam. Please check permissions and try again."
+        "Não foi possível acessar a webcam. Por favor, verifique as permissões e tente novamente."
       )
       toast({
-        title: "Camera Error",
-        description: "Could not access your camera",
+        title: "Erro na Câmera",
+        description: "Não foi possível acessar sua câmera",
         variant: "destructive",
       })
     }
@@ -122,6 +137,23 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({
   const detectFaceInVideo = async () => {
     if (videoRef.current && canvasRef.current) {
       try {
+        // Verifica se o vídeo está pronto
+        if (videoRef.current.readyState < 2) {
+          return
+        }
+
+        // Verifica se o vídeo tem dimensões válidas
+        if (
+          videoRef.current.videoWidth === 0 ||
+          videoRef.current.videoHeight === 0
+        ) {
+          return
+        }
+
+        // Configura as dimensões do canvas
+        canvasRef.current.width = videoRef.current.videoWidth
+        canvasRef.current.height = videoRef.current.videoHeight
+
         const faceData = await detectFace(videoRef.current)
         onFaceDetected(faceData)
 
@@ -145,7 +177,7 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({
           }
         }
       } catch (err) {
-        console.error("Error detecting face:", err)
+        console.error("Erro ao detectar face:", err)
       }
     }
   }
@@ -218,8 +250,13 @@ const WebcamCapture: React.FC<WebcamCaptureProps> = ({
           <canvas
             ref={canvasRef}
             className="absolute inset-0 pointer-events-none"
-            width="640"
-            height="480"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              transform: "scaleX(-1)",
+              zIndex: 10,
+            }}
           />
         </>
       ) : (

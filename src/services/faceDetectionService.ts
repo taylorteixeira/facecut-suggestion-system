@@ -1,7 +1,6 @@
-// Face detection service using TensorFlow.js and face-api.js
+// Face detection service using MediaPipe Face Mesh
 
-import * as tf from "@tensorflow/tfjs"
-import * as faceapi from "@vladmandic/face-api"
+import { FaceMesh } from "@mediapipe/face_mesh"
 
 // Face shape classifications
 export type FaceShape =
@@ -13,100 +12,159 @@ export type FaceShape =
   | "diamond"
   | "triangle"
 
+interface Landmark {
+  x: number
+  y: number
+  z: number
+}
+
+interface FaceMeshResults {
+  multiFaceLandmarks: Landmark[][]
+  image: HTMLImageElement | HTMLVideoElement
+}
+
 export interface FaceData {
   faceShape: FaceShape
   confidence: number
-  landmarks?: faceapi.FaceLandmarks68
-  detection?: faceapi.FaceDetection
+  landmarks?: Landmark[]
+  detection?: Landmark[][]
 }
 
-let modelsLoaded = false
-
-// Model URLs (direct CDN links to ensure reliable access)
-const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models"
+let faceMesh: FaceMesh | null = null
+let lastResults: FaceMeshResults | null = null
 
 export const loadModels = async () => {
-  if (modelsLoaded) return
+  if (faceMesh) return
 
   try {
-    console.log("Loading face detection models from:", MODEL_URL)
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)
-    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
-    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
-    modelsLoaded = true
-    console.log("Face detection models loaded successfully")
+    console.log("Iniciando MediaPipe Face Mesh...")
+    faceMesh = new FaceMesh({
+      locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+      },
+    })
+
+    faceMesh.setOptions({
+      maxNumFaces: 1,
+      refineLandmarks: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5,
+    })
+
+    // Adiciona callback para resultados
+    faceMesh.onResults((results) => {
+      console.log("Resultados recebidos no callback:", results)
+      lastResults = results as unknown as FaceMeshResults
+    })
+
+    await faceMesh.initialize()
+    console.log("MediaPipe Face Mesh carregado com sucesso")
   } catch (error) {
-    console.error("Error loading face detection models:", error)
-    throw new Error("Failed to load face detection models")
+    console.error("Erro ao carregar MediaPipe Face Mesh:", error)
+    throw new Error("Falha ao carregar modelos de detecção facial")
   }
 }
 
 export const detectFace = async (
   imageElement: HTMLImageElement | HTMLVideoElement
 ): Promise<FaceData | null> => {
-  if (!modelsLoaded) {
+  if (!faceMesh) {
     await loadModels()
   }
 
   try {
-    const detections = await faceapi
-      .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks()
+    console.log("Detectando face...")
+    console.log("Dimensões da imagem:", {
+      width: imageElement.width,
+      height: imageElement.height,
+    })
 
-    if (!detections) {
+    // Garante que a imagem está carregada
+    if (imageElement instanceof HTMLImageElement && !imageElement.complete) {
+      await new Promise((resolve) => {
+        imageElement.onload = resolve
+      })
+    }
+
+    // Garante que o vídeo está pronto
+    if (
+      imageElement instanceof HTMLVideoElement &&
+      imageElement.readyState < 2
+    ) {
+      await new Promise((resolve) => {
+        imageElement.onloadeddata = resolve
+      })
+    }
+
+    // Envia a imagem para processamento
+    await faceMesh!.send({ image: imageElement })
+
+    // Usa os resultados do callback
+    if (!lastResults) {
+      console.log("Nenhum resultado recebido")
+      return null
+    }
+
+    const landmarks = lastResults.multiFaceLandmarks?.[0]
+    console.log("Landmarks encontrados:", landmarks?.length)
+
+    if (!landmarks) {
+      console.log("Nenhuma face detectada")
       return null
     }
 
     // Analyze face shape based on landmarks
-    const faceShape = analyzeFaceShape(detections.landmarks)
+    const faceShape = analyzeFaceShape(landmarks)
+    console.log("Formato do rosto detectado:", faceShape)
 
     return {
       faceShape: faceShape.shape,
       confidence: faceShape.confidence,
-      landmarks: detections.landmarks,
-      detection: detections.detection,
+      landmarks: landmarks,
+      detection: lastResults.multiFaceLandmarks,
     }
   } catch (error) {
-    console.error("Error detecting face:", error)
+    console.error("Erro ao detectar face:", error)
     return null
   }
 }
 
 // Simplified algorithm to determine face shape based on landmarks
 const analyzeFaceShape = (
-  landmarks: faceapi.FaceLandmarks68
+  landmarks: Landmark[]
 ): { shape: FaceShape; confidence: number } => {
-  // Get face measurements
-  const jawline = landmarks.getJawOutline()
-  const nose = landmarks.getNose()
-  const mouth = landmarks.getMouth()
-  const eyes = landmarks.getLeftEye().concat(landmarks.getRightEye())
+  // Get face measurements using MediaPipe landmarks
+  // MediaPipe provides 468 landmarks, we'll use a subset for face shape analysis
+  const jawline = landmarks.slice(172, 200) // Jawline landmarks
+  const nose = landmarks.slice(1, 10) // Nose landmarks
+  const mouth = landmarks.slice(61, 91) // Mouth landmarks
+  const eyes = landmarks.slice(33, 60) // Eye landmarks
 
   // Face width at the cheekbones
-  const cheekLeft = jawline[1]
-  const cheekRight = jawline[15]
+  const cheekLeft = landmarks[93]
+  const cheekRight = landmarks[323]
   const faceWidth = Math.abs(cheekRight.x - cheekLeft.x)
 
   // Face height
-  const chin = jawline[8]
-  const foreheadY = Math.min(jawline[0].y, jawline[16].y)
+  const chin = landmarks[152]
+  const foreheadY = Math.min(landmarks[10].y, landmarks[338].y)
   const faceHeight = Math.abs(chin.y - foreheadY)
 
   // Jaw width
-  const jawLeft = jawline[3]
-  const jawRight = jawline[13]
+  const jawLeft = landmarks[172]
+  const jawRight = landmarks[397]
   const jawWidth = Math.abs(jawRight.x - jawLeft.x)
 
   // Forehead width
-  const foreheadWidth = Math.abs(jawline[0].x - jawline[16].x)
+  const foreheadWidth = Math.abs(landmarks[10].x - landmarks[338].x)
 
   // Cheekbone width
-  const cheekboneWidth = Math.abs(jawline[2].x - jawline[14].x)
+  const cheekboneWidth = Math.abs(landmarks[93].x - landmarks[323].x)
 
   // Face symmetry
   const faceCenter = faceWidth / 2
-  const leftSideWidth = Math.abs(faceCenter - jawline[0].x)
-  const rightSideWidth = Math.abs(jawline[16].x - faceCenter)
+  const leftSideWidth = Math.abs(faceCenter - landmarks[10].x)
+  const rightSideWidth = Math.abs(landmarks[338].x - faceCenter)
   const symmetryRatio =
     Math.min(leftSideWidth, rightSideWidth) /
     Math.max(leftSideWidth, rightSideWidth)
@@ -168,38 +226,119 @@ const analyzeFaceShape = (
 export const drawFaceDetection = (
   canvas: HTMLCanvasElement,
   imageElement: HTMLImageElement | HTMLVideoElement,
-  detection: faceapi.FaceDetection,
-  landmarks: faceapi.FaceLandmarks68
+  detection: Landmark[][],
+  landmarks: Landmark[]
 ) => {
-  // Resize canvas to match the image
-  const displaySize = {
+  console.log("Desenhando detecção facial...")
+  console.log("Dimensões do canvas:", {
+    width: canvas.width,
+    height: canvas.height,
+  })
+  console.log("Dimensões da imagem:", {
     width: imageElement.width,
     height: imageElement.height,
-  }
-  faceapi.matchDimensions(canvas, displaySize)
+  })
+  console.log("Número de landmarks:", landmarks.length)
 
-  // Draw detections and landmarks
-  const resizedDetection = faceapi.resizeResults(
-    { detection, landmarks },
-    displaySize
-  )
+  // Garante que o canvas tem as dimensões corretas
+  if (canvas.width === 0 || canvas.height === 0) {
+    console.error("Canvas com dimensões inválidas")
+    return
+  }
 
   const ctx = canvas.getContext("2d")
-  if (!ctx) return
+  if (!ctx) {
+    console.error("Não foi possível obter o contexto 2D do canvas")
+    return
+  }
 
+  // Limpa o canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  // Draw face box
-  const { box } = resizedDetection.detection
+  // Desenha o contorno do rosto
   ctx.strokeStyle = "#4A90E2"
   ctx.lineWidth = 2
-  ctx.strokeRect(box.x, box.y, box.width, box.height)
+  ctx.beginPath()
 
-  // Draw landmarks
+  // Contorno do rosto (usando os landmarks específicos do MediaPipe)
+  const faceOutline = [
+    ...landmarks.slice(10, 33), // Lado direito do rosto
+    ...landmarks.slice(33, 46), // Olho direito
+    ...landmarks.slice(46, 61), // Sobrancelha direita
+    ...landmarks.slice(61, 91), // Boca
+    ...landmarks.slice(91, 112), // Sobrancelha esquerda
+    ...landmarks.slice(112, 133), // Olho esquerdo
+    ...landmarks.slice(133, 152), // Lado esquerdo do rosto
+    ...landmarks.slice(152, 172), // Queixo
+  ]
+
+  faceOutline.forEach((point, index) => {
+    const x = point.x * canvas.width
+    const y = point.y * canvas.height
+    if (index === 0) {
+      ctx.moveTo(x, y)
+    } else {
+      ctx.lineTo(x, y)
+    }
+  })
+  ctx.closePath()
+  ctx.stroke()
+
+  // Desenha os landmarks principais
   ctx.fillStyle = "#50E3C2"
-  resizedDetection.landmarks.positions.forEach((point) => {
+  landmarks.forEach((point) => {
+    const x = point.x * canvas.width
+    const y = point.y * canvas.height
     ctx.beginPath()
-    ctx.arc(point.x, point.y, 2, 0, 2 * Math.PI)
+    ctx.arc(x, y, 2, 0, 2 * Math.PI)
     ctx.fill()
+  })
+
+  // Desenha pontos específicos para melhor visualização
+  // Olhos
+  const leftEye = landmarks.slice(33, 46)
+  const rightEye = landmarks.slice(133, 146)
+  ctx.fillStyle = "#FF0000"
+  leftEye.forEach((point) => {
+    const x = point.x * canvas.width
+    const y = point.y * canvas.height
+    ctx.beginPath()
+    ctx.arc(x, y, 3, 0, 2 * Math.PI)
+    ctx.fill()
+  })
+  rightEye.forEach((point) => {
+    const x = point.x * canvas.width
+    const y = point.y * canvas.height
+    ctx.beginPath()
+    ctx.arc(x, y, 3, 0, 2 * Math.PI)
+    ctx.fill()
+  })
+
+  // Boca
+  const mouth = landmarks.slice(61, 91)
+  ctx.fillStyle = "#00FF00"
+  mouth.forEach((point) => {
+    const x = point.x * canvas.width
+    const y = point.y * canvas.height
+    ctx.beginPath()
+    ctx.arc(x, y, 3, 0, 2 * Math.PI)
+    ctx.fill()
+  })
+
+  // Nariz
+  const nose = landmarks.slice(1, 10)
+  ctx.fillStyle = "#0000FF"
+  nose.forEach((point) => {
+    const x = point.x * canvas.width
+    const y = point.y * canvas.height
+    ctx.beginPath()
+    ctx.arc(x, y, 3, 0, 2 * Math.PI)
+    ctx.fill()
+  })
+
+  // Log para debug
+  console.log("Primeiro landmark:", {
+    x: landmarks[0].x * canvas.width,
+    y: landmarks[0].y * canvas.height,
   })
 }
