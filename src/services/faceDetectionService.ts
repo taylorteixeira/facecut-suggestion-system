@@ -1,6 +1,6 @@
 // Face detection service using MediaPipe Face Mesh
 
-import { FaceMesh } from "@mediapipe/face_mesh"
+import * as faceMesh from "@mediapipe/face_mesh"
 
 // Face shape classifications
 export type FaceShape =
@@ -30,21 +30,21 @@ export interface FaceData {
   detection?: Landmark[][]
 }
 
-let faceMesh: FaceMesh | null = null
+let faceMeshInstance: faceMesh.FaceMesh | null = null
 let lastResults: FaceMeshResults | null = null
 
 export const loadModels = async () => {
-  if (faceMesh) return
+  if (faceMeshInstance) return
 
   try {
     console.log("Iniciando MediaPipe Face Mesh...")
-    faceMesh = new FaceMesh({
+    faceMeshInstance = new faceMesh.FaceMesh({
       locateFile: (file) => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
       },
     })
 
-    faceMesh.setOptions({
+    faceMeshInstance.setOptions({
       maxNumFaces: 1,
       refineLandmarks: true,
       minDetectionConfidence: 0.5,
@@ -52,12 +52,12 @@ export const loadModels = async () => {
     })
 
     // Adiciona callback para resultados
-    faceMesh.onResults((results) => {
+    faceMeshInstance.onResults((results) => {
       console.log("Resultados recebidos no callback:", results)
       lastResults = results as unknown as FaceMeshResults
     })
 
-    await faceMesh.initialize()
+    await faceMeshInstance.initialize()
     console.log("MediaPipe Face Mesh carregado com sucesso")
   } catch (error) {
     console.error("Erro ao carregar MediaPipe Face Mesh:", error)
@@ -68,7 +68,7 @@ export const loadModels = async () => {
 export const detectFace = async (
   imageElement: HTMLImageElement | HTMLVideoElement
 ): Promise<FaceData | null> => {
-  if (!faceMesh) {
+  if (!faceMeshInstance) {
     await loadModels()
   }
 
@@ -97,7 +97,7 @@ export const detectFace = async (
     }
 
     // Envia a imagem para processamento
-    await faceMesh!.send({ image: imageElement })
+    await faceMeshInstance!.send({ image: imageElement })
 
     // Usa os resultados do callback
     if (!lastResults) {
