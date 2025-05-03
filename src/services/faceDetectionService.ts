@@ -1,6 +1,10 @@
 // Face detection service using MediaPipe Face Mesh
 
-import * as faceMesh from "@mediapipe/face_mesh"
+declare global {
+  interface Window {
+    FaceMesh: any
+  }
+}
 
 // Face shape classifications
 export type FaceShape =
@@ -30,7 +34,7 @@ export interface FaceData {
   detection?: Landmark[][]
 }
 
-let faceMeshInstance: faceMesh.FaceMesh | null = null
+let faceMeshInstance: any = null
 let lastResults: FaceMeshResults | null = null
 
 export const loadModels = async () => {
@@ -38,8 +42,31 @@ export const loadModels = async () => {
 
   try {
     console.log("Iniciando MediaPipe Face Mesh...")
-    faceMeshInstance = new faceMesh.FaceMesh({
-      locateFile: (file) => {
+
+    // Carrega o script do MediaPipe
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script")
+      script.src =
+        "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"
+      script.onload = resolve
+      script.onerror = reject
+      document.head.appendChild(script)
+    })
+
+    // Aguarda o FaceMesh estar disponível
+    await new Promise((resolve) => {
+      const checkFaceMesh = () => {
+        if (window.FaceMesh) {
+          resolve(true)
+        } else {
+          setTimeout(checkFaceMesh, 100)
+        }
+      }
+      checkFaceMesh()
+    })
+
+    faceMeshInstance = new window.FaceMesh({
+      locateFile: (file: string) => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
       },
     })
