@@ -300,7 +300,8 @@ export const drawFaceDetection = (
   ]
 
   faceOutline.forEach((point, index) => {
-    const x = point.x * canvas.width
+    // Inverte a coordenada x para compensar o espelhamento do vídeo
+    const x = canvas.width - point.x * canvas.width
     const y = point.y * canvas.height
     if (index === 0) {
       ctx.moveTo(x, y)
@@ -314,7 +315,8 @@ export const drawFaceDetection = (
   // Desenha os landmarks principais
   ctx.fillStyle = "#50E3C2"
   landmarks.forEach((point) => {
-    const x = point.x * canvas.width
+    // Inverte a coordenada x para compensar o espelhamento do vídeo
+    const x = canvas.width - point.x * canvas.width
     const y = point.y * canvas.height
     ctx.beginPath()
     ctx.arc(x, y, 2, 0, 2 * Math.PI)
@@ -327,14 +329,16 @@ export const drawFaceDetection = (
   const rightEye = landmarks.slice(133, 146)
   ctx.fillStyle = "#FF0000"
   leftEye.forEach((point) => {
-    const x = point.x * canvas.width
+    // Inverte a coordenada x para compensar o espelhamento do vídeo
+    const x = canvas.width - point.x * canvas.width
     const y = point.y * canvas.height
     ctx.beginPath()
     ctx.arc(x, y, 3, 0, 2 * Math.PI)
     ctx.fill()
   })
   rightEye.forEach((point) => {
-    const x = point.x * canvas.width
+    // Inverte a coordenada x para compensar o espelhamento do vídeo
+    const x = canvas.width - point.x * canvas.width
     const y = point.y * canvas.height
     ctx.beginPath()
     ctx.arc(x, y, 3, 0, 2 * Math.PI)
@@ -345,7 +349,8 @@ export const drawFaceDetection = (
   const mouth = landmarks.slice(61, 91)
   ctx.fillStyle = "#00FF00"
   mouth.forEach((point) => {
-    const x = point.x * canvas.width
+    // Inverte a coordenada x para compensar o espelhamento do vídeo
+    const x = canvas.width - point.x * canvas.width
     const y = point.y * canvas.height
     ctx.beginPath()
     ctx.arc(x, y, 3, 0, 2 * Math.PI)
@@ -356,7 +361,8 @@ export const drawFaceDetection = (
   const nose = landmarks.slice(1, 10)
   ctx.fillStyle = "#0000FF"
   nose.forEach((point) => {
-    const x = point.x * canvas.width
+    // Inverte a coordenada x para compensar o espelhamento do vídeo
+    const x = canvas.width - point.x * canvas.width
     const y = point.y * canvas.height
     ctx.beginPath()
     ctx.arc(x, y, 3, 0, 2 * Math.PI)
@@ -365,7 +371,7 @@ export const drawFaceDetection = (
 
   // Log para debug
   console.log("Primeiro landmark:", {
-    x: landmarks[0].x * canvas.width,
+    x: canvas.width - landmarks[0].x * canvas.width,
     y: landmarks[0].y * canvas.height,
   })
 }
