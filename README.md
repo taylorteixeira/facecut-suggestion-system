@@ -1,69 +1,87 @@
-# Welcome to your Lovable project
+# FaceCut - Sistema de Sugestão de Cortes de Cabelo e Barba
 
-## Project info
+O FaceCut é um sistema inteligente que utiliza reconhecimento facial para sugerir cortes de cabelo e barba personalizados baseados no formato do rosto do usuário.
 
-**URL**: https://lovable.dev/projects/7ced2285-97bc-4ad5-a74f-99b3e40b19f1
+## 🚀 Funcionalidades
 
-## How can I edit this code?
+- **Detecção Facial em Tempo Real**: Utiliza o MediaPipe Face Mesh para detectar e analisar o formato do rosto do usuário.
+- **Análise de Formato Facial**: Identifica automaticamente o formato do rosto (oval, redondo, quadrado, coração, longo, diamante ou triangular).
+- **Sugestões Personalizadas**:
+  - Recomenda cortes de cabelo ideais para o formato do rosto
+  - Sugere estilos de barba que complementam o formato facial
+- **Interface Intuitiva**: Design moderno e responsivo com feedback visual em tempo real.
 
-There are several ways of editing your application.
+## 🛠️ Tecnologias Utilizadas
 
-**Use Lovable**
+- **Frontend**:
+  - React
+  - TypeScript
+  - Tailwind CSS
+  - Shadcn/ui (componentes de interface)
+  - MediaPipe Face Mesh (detecção facial)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7ced2285-97bc-4ad5-a74f-99b3e40b19f1) and start prompting.
+## 📋 Pré-requisitos
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js (versão 18 ou superior)
+- npm ou yarn
+- Webcam funcional
 
-**Use your preferred IDE**
+## 🔧 Instalação
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. Clone o repositório:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+git clone https://github.com/taylorteixeira/facecut-suggestion-system.git
+cd facecut-suggestion-system
 ```
 
-**Edit a file directly in GitHub**
+2. Instale as dependências:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm install
+# ou
+yarn install
+```
 
-**Use GitHub Codespaces**
+3. Inicie o servidor de desenvolvimento:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```bash
+npm run dev
+# ou
+yarn dev
+```
 
-## What technologies are used for this project?
+4. Acesse o projeto em `http://localhost:5173`
 
-This project is built with .
+## 🎯 Como Usar
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. **Iniciar a Câmera**:
 
-## How can I deploy this project?
+   - Clique no botão "Iniciar Câmera"
+   - Permita o acesso à webcam quando solicitado
 
-Simply open [Lovable](https://lovable.dev/projects/7ced2285-97bc-4ad5-a74f-99b3e40b19f1) and click on Share -> Publish.
+2. **Capturar Imagem**:
 
-## I want to use a custom domain - is that possible?
+   - Posicione seu rosto no centro do enquadramento
+   - Clique em "Tirar Foto" quando estiver pronto
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+3. **Análise e Recomendações**:
+   - O sistema analisará automaticamente o formato do seu rosto
+   - Você receberá sugestões personalizadas de cortes de cabelo e barba
+   - As recomendações são baseadas em princípios de design facial e harmonia
+
+## 📱 Compatibilidade
+
+- Navegadores modernos (Chrome, Firefox, Safari, Edge)
+- Requer acesso à webcam
+- Funciona melhor em dispositivos com boa iluminação
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## ✨ Recursos Adicionais
+
+- [Documentação do MediaPipe Face Mesh](https://google.github.io/mediapipe/solutions/face_mesh)
+- [Guia de Formatos de Rosto](https://www.hair.com/advice/face-shapes-guide.html)
+- [Tendências de Cortes de Cabelo](https://www.menshairstylestoday.com/mens-haircuts/)
