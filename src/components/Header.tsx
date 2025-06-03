@@ -1,7 +1,7 @@
 import React from "react"
 import { Scissors } from "lucide-react"
 import { TiArrowBack } from "react-icons/ti";
-
+ 
 const Header: React.FC = () => {
   return (
     <header className="bg-white py-4 border-b border-gray-100">
@@ -13,7 +13,7 @@ const Header: React.FC = () => {
             href="https://cfp-client.vercel.app/dashboard"
             className="flex items-center gap-1 text-sm text-gray-600 font-medium cursor-pointer hover:text-gray-800 transition"
           >
-            <TiArrowBack className="text-lg" />
+            <TiArrowBack className="text-lg text-gray-600" />
             Voltar
           </a>
 
